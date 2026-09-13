@@ -17,3 +17,13 @@ output "public_subnet_id" {
   description = "ID of the platform public subnet."
   value       = aws_subnet.public.id
 }
+
+output "elastic_ip_address" {
+  description = "Stable public IP address reserved for the platform EC2 instance."
+  value       = aws_eip.platform.public_ip
+}
+
+output "ec2_instance_profile_name" {
+  description = "IAM Instance Profile that will be attached to the platform EC2 instance."
+  value       = aws_iam_instance_profile.ec2.name
+}
