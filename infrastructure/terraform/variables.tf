@@ -39,3 +39,15 @@ variable "availability_zone" {
   type        = string
   default     = "eu-central-1a"
 }
+
+variable "instance_type" {
+  description = "EC2 instance type used by the V0 platform."
+  type        = string
+  default     = "t3.medium"
+}
+
+variable "root_volume_size_gb" {
+  description = "Size in GiB of the encrypted EC2 root EBS volume."
+  type        = number
+  default     = 40
+}
