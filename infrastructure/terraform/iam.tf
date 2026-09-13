@@ -79,3 +79,26 @@ resource "aws_iam_role_policy" "ec2_bedrock_inference" {
   role   = aws_iam_role.ec2.id
   policy = data.aws_iam_policy_document.ec2_bedrock_inference.json
 }
+
+data "aws_iam_policy_document" "ec2_secrets_read" {
+  statement {
+    sid    = "ReadPlatformApplicationSecrets"
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:GetSecretValue",
+    ]
+
+    resources = [
+      aws_secretsmanager_secret.gemini_api_key.arn,
+      aws_secretsmanager_secret.mongodb_credentials.arn,
+      aws_secretsmanager_secret.librechat_jwt.arn,
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "ec2_secrets_read" {
+  name   = "${var.project_name}-${var.environment}-secrets-read"
+  role   = aws_iam_role.ec2.id
+  policy = data.aws_iam_policy_document.ec2_secrets_read.json
+}
