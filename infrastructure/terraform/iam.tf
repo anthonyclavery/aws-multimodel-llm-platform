@@ -41,22 +41,32 @@ resource "aws_iam_instance_profile" "ec2" {
 }
 
 locals {
-  bedrock_model_arns = [
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/amazon.nova-lite-*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/amazon.nova-pro-*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/anthropic.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/openai.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/deepseek.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/mistral.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/xai.grok-*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/meta.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/cohere.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/ai21.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/qwen.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/moonshot.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/minimax.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/nvidia.*",
-    "arn:aws:bedrock:${var.aws_region}::foundation-model/writer.*",
+  bedrock_inference_profile_arns = [
+    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.anthropic.claude-sonnet-5",
+    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.anthropic.claude-opus-5",
+    "arn:aws:bedrock:eu-central-1:*:inference-profile/global.anthropic.claude-fable-5-1",
+    "arn:aws:bedrock:eu-central-1:*:inference-profile/global.xai.grok-4.6",
+    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.amazon.nova-micro-v1:0",
+    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.amazon.nova-lite-v1:0",
+    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.amazon.nova-pro-v1:0",
+    "arn:aws:bedrock:eu-central-1:*:inference-profile/global.amazon.nova-2-lite-v1:0",
+  ]
+
+  bedrock_foundation_model_arns = [
+    "arn:aws:bedrock:eu-*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0",
+    "arn:aws:bedrock:eu-*::foundation-model/anthropic.claude-sonnet-5",
+    "arn:aws:bedrock:eu-*::foundation-model/anthropic.claude-opus-5",
+    "arn:aws:bedrock:eu-*::foundation-model/amazon.nova-micro-v1:0",
+    "arn:aws:bedrock:eu-*::foundation-model/amazon.nova-lite-v1:0",
+    "arn:aws:bedrock:eu-*::foundation-model/amazon.nova-pro-v1:0",
+
+    "arn:aws:bedrock:::foundation-model/anthropic.claude-fable-5-1",
+    "arn:aws:bedrock:eu-central-1::foundation-model/anthropic.claude-fable-5-1",
+    "arn:aws:bedrock:::foundation-model/xai.grok-4.6",
+    "arn:aws:bedrock:eu-central-1::foundation-model/xai.grok-4.6",
+    "arn:aws:bedrock:::foundation-model/amazon.nova-2-lite-v1:0",
+    "arn:aws:bedrock:eu-central-1::foundation-model/amazon.nova-2-lite-v1:0",
   ]
 }
 
@@ -70,14 +80,29 @@ data "aws_iam_policy_document" "ec2_bedrock_inference" {
       "bedrock:InvokeModelWithResponseStream",
     ]
 
-    resources = local.bedrock_model_arns
+    resources = concat(
+      local.bedrock_inference_profile_arns,
+      local.bedrock_foundation_model_arns,
+    )
   }
+
+  statement {
+    sid    = "GetApprovedBedrockInferenceProfiles"
+    effect = "Allow"
+
+    actions = [
+      "bedrock:GetInferenceProfile",
+    ]
+
+    resources = local.bedrock_inference_profile_arns
+  }
+
   statement {
     sid    = "ListBedrockInferenceProfiles"
     effect = "Allow"
 
     actions = [
-      "bedrock:ListInferenceProfiles"
+      "bedrock:ListInferenceProfiles",
     ]
 
     resources = ["*"]
