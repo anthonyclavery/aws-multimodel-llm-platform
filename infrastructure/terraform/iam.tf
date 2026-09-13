@@ -39,3 +39,43 @@ resource "aws_iam_instance_profile" "ec2" {
     ManagedBy   = "Terraform"
   }
 }
+
+locals {
+  bedrock_model_arns = [
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/amazon.nova-lite-*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/amazon.nova-pro-*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/anthropic.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/openai.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/deepseek.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/mistral.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/xai.grok-*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/meta.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/cohere.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/ai21.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/qwen.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/moonshot.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/minimax.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/nvidia.*",
+    "arn:aws:bedrock:${var.aws_region}::foundation-model/writer.*",
+  ]
+}
+
+data "aws_iam_policy_document" "ec2_bedrock_inference" {
+  statement {
+    sid    = "InvokeApprovedBedrockModels"
+    effect = "Allow"
+
+    actions = [
+      "bedrock:InvokeModel",
+      "bedrock:InvokeModelWithResponseStream",
+    ]
+
+    resources = local.bedrock_model_arns
+  }
+}
+
+resource "aws_iam_role_policy" "ec2_bedrock_inference" {
+  name   = "${var.project_name}-${var.environment}-bedrock-inference"
+  role   = aws_iam_role.ec2.id
+  policy = data.aws_iam_policy_document.ec2_bedrock_inference.json
+}
