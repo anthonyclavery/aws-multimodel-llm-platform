@@ -72,6 +72,16 @@ data "aws_iam_policy_document" "ec2_bedrock_inference" {
 
     resources = local.bedrock_model_arns
   }
+  statement {
+    sid    = "ListBedrockInferenceProfiles"
+    effect = "Allow"
+
+    actions = [
+      "bedrock:ListInferenceProfiles"
+    ]
+
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_role_policy" "ec2_bedrock_inference" {
