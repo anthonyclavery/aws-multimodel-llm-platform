@@ -1,0 +1,77 @@
+services:
+  caddy:
+    image: caddy:2.10.0-alpine
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - librechat
+    networks:
+      - edge
+      - application
+
+  librechat:
+    image: ${LIBRECHAT_IMAGE:?Set LIBRECHAT_IMAGE in .env}
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      HOST: 0.0.0.0
+      NODE_ENV: production
+    expose:
+      - "3080"
+    volumes:
+      - ../../config/librechat/librechat.yaml:/app/librechat.yaml:ro
+      - librechat_data:/app/data
+      - librechat_uploads:/app/uploads
+      - librechat_logs:/app/api/logs
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - application
+
+  mongodb:
+    image: mongo:8.0.20
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: ["mongod", "--auth", "--bind_ip_all"]
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongodb-init.js:/docker-entrypoint-initdb.d/10-create-librechat-user.js:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          mongosh --quiet --username "$$MONGO_INITDB_ROOT_USERNAME"
+          --password "$$MONGO_INITDB_ROOT_PASSWORD"
+          --authenticationDatabase admin
+          --eval "db.adminCommand('ping').ok"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks:
+      - application
+
+networks:
+  edge:
+  application:
+    internal: true
+
+volumes:
+  caddy_data:
+  caddy_config:
+  librechat_data:
+  librechat_uploads:
+  librechat_logs:
+  mongodb_data:

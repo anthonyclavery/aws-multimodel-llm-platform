@@ -1,0 +1,71 @@
+name: Verify repository
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  terraform:
+    name: Validate Terraform
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.16.2
+      - name: Check Terraform formatting
+        run: make terraform-fmt
+      - name: Initialize Terraform without a remote backend
+        run: terraform -chdir=infrastructure/terraform init -backend=false
+      - name: Validate Terraform configuration
+        run: terraform -chdir=infrastructure/terraform validate -no-color
+      - name: Initialize Terraform bootstrap without a remote backend
+        run: terraform -chdir=infrastructure/bootstrap init -backend=false
+      - name: Validate Terraform bootstrap configuration
+        run: terraform -chdir=infrastructure/bootstrap validate -no-color
+
+  runtime:
+    name: Validate runtime assets
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+      - name: Check shell scripts
+        run: bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh
+      - name: Check MongoDB initialization script
+        run: node --check docker/librechat/mongodb-init.js
+      - name: Validate Compose interpolation
+        working-directory: docker/librechat
+        run: >-
+          cp .env.example .env &&
+          docker compose --env-file .env -f compose.yaml config --quiet
+      - name: Validate Caddy configuration
+        working-directory: docker/librechat
+        run: >-
+          docker run --rm
+          -e CADDY_DOMAIN=ci.example.com
+          -e CADDY_ACME_EMAIL=ci@example.com
+          -v "$PWD/Caddyfile:/etc/caddy/Caddyfile:ro"
+          caddy:2.10.0-alpine
+          caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+
+  human-approval:
+    name: Human approval
+    if: github.event_name == 'pull_request'
+    needs:
+      - terraform
+      - runtime
+    runs-on: ubuntu-24.04
+    environment:
+      name: human-approval
+    steps:
+      - name: Record approval
+        run: echo "A GitHub environment reviewer approved this pull request."
