@@ -51,3 +51,27 @@ variable "root_volume_size_gb" {
   type        = number
   default     = 40
 }
+
+variable "nightly_shutdown_schedule" {
+  description = "EventBridge Scheduler cron expression for the nightly EC2 shutdown."
+  type        = string
+  default     = "cron(0 22 * * ? *)"
+}
+
+variable "schedule_timezone" {
+  description = "IANA time zone used by the shutdown and backup schedules."
+  type        = string
+  default     = "Europe/Paris"
+}
+
+variable "ebs_backup_schedule" {
+  description = "AWS Backup cron expression for the daily EBS backup."
+  type        = string
+  default     = "cron(0 1 ? * * *)"
+}
+
+variable "ebs_backup_retention_days" {
+  description = "Number of days an EBS recovery point is retained."
+  type        = number
+  default     = 30
+}

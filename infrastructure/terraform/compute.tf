@@ -57,6 +57,7 @@ resource "aws_instance" "platform" {
     Project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
+    Backup      = "daily-30-days"
   }
 
   depends_on = [

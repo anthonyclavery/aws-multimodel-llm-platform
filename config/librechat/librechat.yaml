@@ -1,0 +1,7 @@
+version: 1.0.8
+cache: true
+
+endpoints:
+  bedrock:
+    availableRegions:
+      - eu-central-1
