@@ -24,7 +24,8 @@ aws sso login --profile aws-multimodel-llm
 ```
 
 The script first creates the protected bucket through a locally held bootstrap
-state. It then migrates that bootstrap state and the existing platform state to
+state. It then creates an ignored backend configuration from the tracked
+template and migrates that bootstrap state and the existing platform state to
 S3. It prompts for Terraform approval before creating the bucket. Do not delete
 the existing local state files manually. Terraform preserves a local backup
 during migration.
