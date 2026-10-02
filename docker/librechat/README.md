@@ -23,6 +23,11 @@ Persistent application directories are mounted from `RUNTIME_DATA_ROOT` on the
 EC2 EBS volume. They include the MongoDB data, Caddy certificates and LibreChat
 uploads. They are intentionally not anonymous Docker volumes.
 
+Run `scripts/deploy-librechat-on-ec2.sh` as the repository owner, without
+`sudo`. The script uses `sudo` only for Docker and runtime-directory operations
+that require elevated rights. Launching the full script with `sudo` would make
+Git metadata owned by `root`.
+
 For a blank EC2, run the stack on the target host with:
 
 ```sh

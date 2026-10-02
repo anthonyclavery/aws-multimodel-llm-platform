@@ -3,6 +3,7 @@ set -euo pipefail
 
 usage() {
   printf '%s\n' "Usage: $0 [--branch <Git branch>]"
+  printf '%s\n' 'Run this script as the repository owner, without sudo.'
 }
 
 branch='main'
@@ -19,6 +20,11 @@ done
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 compose_file="$repo_root/docker/librechat/compose.yaml"
 env_file="$repo_root/docker/librechat/.env"
+
+if [[ $EUID -eq 0 ]]; then
+  printf '%s\n' 'Do not run this deployment script with sudo. Run it as the repository owner; it elevates only the Docker and runtime-directory operations that require it.' >&2
+  exit 2
+fi
 
 command -v git >/dev/null || { printf '%s\n' 'Git is required.' >&2; exit 1; }
 command -v docker >/dev/null || { printf '%s\n' 'Docker is required.' >&2; exit 1; }
