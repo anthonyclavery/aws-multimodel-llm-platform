@@ -21,8 +21,9 @@ bootstrap-terraform-validate:
 	terraform -chdir=$(BOOTSTRAP_TERRAFORM_DIR) validate
 
 runtime-validate:
-	bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh scripts/deploy-librechat-on-ec2.sh scripts/rebuild-librechat-on-ec2.sh scripts/close-librechat-registration-on-ec2.sh scripts/initialize-v0-secrets.sh scripts/migrate-librechat-credentials-to-hex.sh scripts/refresh-librechat-credentials-on-ec2.sh
+	bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh scripts/deploy-librechat-on-ec2.sh scripts/rebuild-librechat-on-ec2.sh scripts/close-librechat-registration-on-ec2.sh scripts/initialize-v0-secrets.sh scripts/initialize-cost-dashboard-secret.sh scripts/configure-cost-dashboard-mongodb-on-ec2.sh scripts/migrate-librechat-credentials-to-hex.sh scripts/refresh-librechat-credentials-on-ec2.sh scripts/install-cost-pricing-sync-on-ec2.sh scripts/sync-cost-pricing-on-ec2.sh
 	node --check docker/librechat/mongodb-init.js
+	cd docker/cost-dashboard && npm ci --omit=dev && npm audit --omit=dev --audit-level=high && node --check server.mjs && node --check sync-pricing.mjs
 	cd docker/librechat && RUNTIME_ENV_FILE=.env.example docker compose --env-file .env.example -f compose.yaml config --quiet
 
 verify: terraform-fmt terraform-validate bootstrap-terraform-fmt bootstrap-terraform-validate runtime-validate

@@ -33,3 +33,15 @@ resource "aws_secretsmanager_secret" "librechat_jwt" {
     ManagedBy   = "Terraform"
   }
 }
+
+resource "aws_secretsmanager_secret" "cost_dashboard_credentials" {
+  name        = "${var.project_name}-${var.environment}/cost-dashboard-credentials"
+  description = "Caddy authentication and read-only MongoDB credentials for the cost dashboard."
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-cost-dashboard-credentials"
+    Project     = var.project_name
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+  }
+}

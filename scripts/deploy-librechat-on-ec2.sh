@@ -62,7 +62,8 @@ sudo install -d -m 0750 -o 1000 -g 1000 \
   "$data_root/librechat/app-data" \
   "$data_root/librechat/uploads" \
   "$data_root/librechat/logs" \
-  "$data_root/librechat/images"
+  "$data_root/librechat/images" \
+  "$data_root/cost-dashboard"
 
 while IFS= read -r container_id; do
   [[ -z "$container_id" ]] && continue
@@ -90,6 +91,8 @@ if [[ -n "$requested_image" ]]; then
   sudo sed -i "s|^LIBRECHAT_IMAGE=.*$|LIBRECHAT_IMAGE=$requested_image|" "$env_file"
 fi
 
-"${compose[@]}" pull
+"${compose[@]}" pull --ignore-buildable
+"${compose[@]}" build --pull cost-dashboard
 "${compose[@]}" up -d
+sudo "$repo_root/scripts/install-cost-pricing-sync-on-ec2.sh"
 "${compose[@]}" ps
