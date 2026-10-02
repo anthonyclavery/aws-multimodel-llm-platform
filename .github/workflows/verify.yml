@@ -43,7 +43,9 @@ jobs:
         run: node --check docker/librechat/mongodb-init.js
       - name: Validate Compose interpolation
         working-directory: docker/librechat
-        run: docker compose --env-file .env.example -f compose.yaml config --quiet
+        run: >-
+          cp .env.example .env &&
+          docker compose --env-file .env -f compose.yaml config --quiet
       - name: Validate Caddy configuration
         working-directory: docker/librechat
         run: >-
