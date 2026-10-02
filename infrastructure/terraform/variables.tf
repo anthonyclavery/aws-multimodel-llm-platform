@@ -46,6 +46,12 @@ variable "instance_type" {
   default     = "t3.medium"
 }
 
+variable "ami_id" {
+  description = "Pinned Ubuntu AMI for the stateful V0 instance. Change only as part of an approved instance replacement."
+  type        = string
+  default     = "ami-03f92a7a8a26c81af"
+}
+
 variable "root_volume_size_gb" {
   description = "Size in GiB of the encrypted EC2 root EBS volume."
   type        = number

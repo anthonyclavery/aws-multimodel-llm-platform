@@ -23,6 +23,8 @@ platform_dir="$repo_root/infrastructure/terraform"
 
 export TF_VAR_aws_profile="$aws_profile"
 export TF_VAR_aws_region="$aws_region"
+export AWS_PROFILE="$aws_profile"
+export AWS_REGION="$aws_region"
 
 terraform -chdir="$bootstrap_dir" init -backend=false -reconfigure
 terraform -chdir="$bootstrap_dir" apply
@@ -32,7 +34,6 @@ cp "$bootstrap_dir/backend.tf.template" "$bootstrap_dir/backend.tf"
 backend_args=(
   "-backend-config=bucket=$(terraform -chdir="$bootstrap_dir" output -raw terraform_state_bucket)"
   "-backend-config=region=$aws_region"
-  "-backend-config=profile=$aws_profile"
   "-backend-config=dynamodb_table=$(terraform -chdir="$bootstrap_dir" output -raw terraform_lock_table)"
 )
 
