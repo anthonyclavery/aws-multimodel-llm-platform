@@ -84,8 +84,17 @@ done < <(sudo docker ps -q --filter publish=443)
 compose=(sudo docker compose -p "$compose_project" --env-file "$env_file" -f "$compose_file")
 "${compose[@]}" config --quiet
 
+application_network="${compose_project}_application"
+network_migration='false'
+if [[ $(sudo docker network inspect --format '{{.Internal}}' "$application_network" 2>/dev/null || true) == 'true' ]]; then
+  network_migration='true'
+fi
+
 commit=$(git rev-parse --short HEAD)
 printf 'Repository synchronized at %s. Image: %s\n' "$commit" "$image"
+if [[ "$network_migration" == 'true' ]]; then
+  printf '%s\n' 'The existing application network is internal. This deployment must briefly stop only this LibreChat Compose stack to migrate its network configuration.'
+fi
 printf 'Type DEPLOY %s to pull and apply this Compose revision: ' "$commit"
 read -r confirmation
 if [[ "$confirmation" != "DEPLOY $commit" ]]; then
@@ -95,6 +104,10 @@ fi
 
 if [[ -n "$requested_image" ]]; then
   sudo sed -i "s|^LIBRECHAT_IMAGE=.*$|LIBRECHAT_IMAGE=$requested_image|" "$env_file"
+fi
+
+if [[ "$network_migration" == 'true' ]]; then
+  "${compose[@]}" down --remove-orphans
 fi
 
 "${compose[@]}" pull --ignore-buildable
