@@ -26,6 +26,10 @@ jobs:
         run: terraform -chdir=infrastructure/terraform init -backend=false
       - name: Validate Terraform configuration
         run: terraform -chdir=infrastructure/terraform validate -no-color
+      - name: Initialize Terraform bootstrap without a remote backend
+        run: terraform -chdir=infrastructure/bootstrap init -backend=false
+      - name: Validate Terraform bootstrap configuration
+        run: terraform -chdir=infrastructure/bootstrap validate -no-color
 
   runtime:
     name: Validate runtime assets
