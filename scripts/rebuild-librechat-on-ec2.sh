@@ -54,21 +54,14 @@ git -c safe.directory="$repo_root" fetch --prune origin main
 git -c safe.directory="$repo_root" switch main
 git -c safe.directory="$repo_root" merge --ff-only origin/main
 
-legacy_ids=()
-for container in "${legacy_containers[@]}"; do
-  if docker inspect "$container" >/dev/null 2>&1; then
-    legacy_ids+=("$(docker inspect --format '{{.Id}}' "$container")")
-  fi
-done
-
 while IFS= read -r container_id; do
   [[ -z "$container_id" ]] && continue
+  container_name=$(docker inspect --format '{{.Name}}' "$container_id")
   allowed='false'
-  for legacy_id in "${legacy_ids[@]}"; do
-    [[ "$container_id" == "$legacy_id" ]] && allowed='true'
+  for legacy_container in "${legacy_containers[@]}"; do
+    [[ "$container_name" == "/$legacy_container" ]] && allowed='true'
   done
   if [[ "$allowed" != 'true' ]]; then
-    container_name=$(docker inspect --format '{{.Name}}' "$container_id")
     printf 'HTTPS port is occupied by non-LibreChat container %s. Rebuild aborted.\n' "$container_name" >&2
     exit 1
   fi
