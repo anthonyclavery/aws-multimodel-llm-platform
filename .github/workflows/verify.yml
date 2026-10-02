@@ -39,7 +39,7 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
       - name: Check shell scripts
-        run: bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh scripts/deploy-librechat-on-ec2.sh scripts/rebuild-librechat-on-ec2.sh scripts/close-librechat-registration-on-ec2.sh
+        run: bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh scripts/deploy-librechat-on-ec2.sh scripts/rebuild-librechat-on-ec2.sh scripts/close-librechat-registration-on-ec2.sh scripts/initialize-v0-secrets.sh
       - name: Check MongoDB initialization script
         run: node --check docker/librechat/mongodb-init.js
       - name: Validate Compose interpolation

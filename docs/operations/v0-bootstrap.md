@@ -3,32 +3,17 @@
 The EC2 instance has an IAM role that can read the three platform secrets. No
 AWS access key is written to the host or to the runtime environment.
 
-Populate these existing AWS Secrets Manager secrets before running the
-bootstrap script. Their names follow the Terraform naming convention for the
-default V0 environment.
+Initialize the three existing AWS Secrets Manager secrets from WSL before
+running a first deployment. The helper creates random MongoDB and LibreChat
+values locally, prompts without echoing for the Gemini API key, and refuses to
+overwrite an existing secret value:
 
-```json
-aws-multimodel-llm-platform-v0/mongodb-credentials
-{
-  "root_username": "root",
-  "root_password": "a-long-random-value",
-  "app_username": "librechat",
-  "app_password": "another-long-random-value"
-}
+```sh
+./scripts/initialize-v0-secrets.sh --profile aws-multimodel-llm
 ```
 
-```json
-aws-multimodel-llm-platform-v0/librechat-jwt
-{
-  "jwt_secret": "random-secret",
-  "jwt_refresh_secret": "different-random-secret",
-  "creds_key": "32-byte-random-key",
-  "creds_iv": "16-byte-random-initialization-vector"
-}
-```
-
-`aws-multimodel-llm-platform-v0/gemini-api-key` accepts either a JSON document
-with a `google_key` field or the API key as the whole secret value.
+The secret values are never committed to Git or printed to the terminal. The
+EC2 role has read-only access to these values.
 
 Clone a reviewed revision of this repository onto the EC2 host, verify that the
 public DNS name already resolves to the instance Elastic IP, then run:
