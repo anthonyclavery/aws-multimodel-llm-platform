@@ -54,6 +54,16 @@ git -c safe.directory="$repo_root" fetch --prune origin main
 git -c safe.directory="$repo_root" switch main
 git -c safe.directory="$repo_root" merge --ff-only origin/main
 
+for secret_id in \
+  aws-multimodel-llm-platform-v0/mongodb-credentials \
+  aws-multimodel-llm-platform-v0/librechat-jwt \
+  aws-multimodel-llm-platform-v0/gemini-api-key; do
+  if ! aws secretsmanager get-secret-value --region "$aws_region" --secret-id "$secret_id" --query SecretString --output text >/dev/null 2>&1; then
+    printf 'Required secret %s has no readable current value. Rebuild aborted before data removal.\n' "$secret_id" >&2
+    exit 1
+  fi
+done
+
 while IFS= read -r container_id; do
   [[ -z "$container_id" ]] && continue
   container_name=$(docker inspect --format '{{.Name}}' "$container_id")
