@@ -23,6 +23,21 @@ Persistent application directories are mounted from `RUNTIME_DATA_ROOT` on the
 EC2 EBS volume. They include the MongoDB data, Caddy certificates and LibreChat
 uploads. They are intentionally not anonymous Docker volumes.
 
+The `/cost` route is a separate, HTTP Basic Auth protected dashboard. It shows
+an immediate token-based estimate by model and an AWS Cost Explorer total for
+Amazon Bedrock. The estimate is scoped to LibreChat transactions. Cost Explorer
+is account-level consolidated billing data, can include another account workload
+that uses Bedrock, and can lag. Google Gemini is therefore shown as an estimate
+only. Its credentials and its read-only MongoDB account are rendered from a
+dedicated Secrets Manager secret.
+
+After the approved Terraform apply has created that secret and granted Cost
+Explorer read access to the EC2 role, initialize it locally with
+`scripts/initialize-cost-dashboard-secret.sh`. On EC2, run
+`scripts/configure-cost-dashboard-mongodb-on-ec2.sh` once, review its explicit
+confirmation prompt, then use the normal reviewed deployment script. No domain,
+password or secret value belongs in the repository.
+
 To upgrade LibreChat, pass an approved, immutable image digest to the normal
 deployment script. The script shows the selected image and updates the ignored
 runtime `.env` only after the explicit deployment confirmation:

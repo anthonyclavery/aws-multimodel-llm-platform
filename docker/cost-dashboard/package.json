@@ -1,0 +1,13 @@
+{
+  "name": "cost-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.16.0 <25"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cost-explorer": "3.1145.0",
+    "mongodb": "6.20.0"
+  }
+}

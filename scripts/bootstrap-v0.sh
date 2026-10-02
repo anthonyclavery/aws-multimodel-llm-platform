@@ -59,6 +59,7 @@ systemctl enable --now docker
   --image "$librechat_image"
 
 cd "$repo_root/docker/librechat"
-docker compose --env-file .env -f compose.yaml pull
+docker compose --env-file .env -f compose.yaml pull --ignore-buildable
+docker compose --env-file .env -f compose.yaml build --pull cost-dashboard
 docker compose --env-file .env -f compose.yaml up -d
 docker compose --env-file .env -f compose.yaml ps

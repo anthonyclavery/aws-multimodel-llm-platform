@@ -90,6 +90,7 @@ if [[ -n "$requested_image" ]]; then
   sudo sed -i "s|^LIBRECHAT_IMAGE=.*$|LIBRECHAT_IMAGE=$requested_image|" "$env_file"
 fi
 
-"${compose[@]}" pull
+"${compose[@]}" pull --ignore-buildable
+"${compose[@]}" build --pull cost-dashboard
 "${compose[@]}" up -d
 "${compose[@]}" ps

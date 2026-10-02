@@ -16,6 +16,7 @@ services:
       - ${RUNTIME_DATA_ROOT:?Set RUNTIME_DATA_ROOT in .env}/caddy/config:/config
     depends_on:
       - librechat
+      - cost-dashboard
     networks:
       - edge
       - application
@@ -66,6 +67,31 @@ services:
       retries: 12
       start_period: 20s
     networks:
+      - database
+
+  cost-dashboard:
+    build:
+      context: ../cost-dashboard
+    restart: unless-stopped
+    env_file:
+      - ${RUNTIME_ENV_FILE:-.env}
+    environment:
+      COST_DASHBOARD_PORT: "8080"
+      COST_EXPLORER_REGION: us-east-1
+    expose:
+      - "8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - application
       - database
 
 networks:

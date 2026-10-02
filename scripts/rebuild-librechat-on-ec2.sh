@@ -125,7 +125,8 @@ install -d -m 0750 -o 1000 -g 1000 \
 
 compose=(docker compose -p "$compose_project" --env-file "$env_file" -f "$compose_file")
 "${compose[@]}" config --quiet
-"${compose[@]}" pull
+"${compose[@]}" pull --ignore-buildable
+"${compose[@]}" build --pull cost-dashboard
 "${compose[@]}" up -d
 "${compose[@]}" ps
 

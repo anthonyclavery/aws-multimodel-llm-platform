@@ -66,6 +66,7 @@ url_encode() {
 mongodb_secret=$(get_secret "${secret_prefix}/mongodb-credentials")
 jwt_secret=$(get_secret "${secret_prefix}/librechat-jwt")
 gemini_secret=$(get_secret "${secret_prefix}/gemini-api-key")
+cost_dashboard_secret=$(get_secret "${secret_prefix}/cost-dashboard-credentials")
 
 mongo_root_username=$(required_json_field "$mongodb_secret" root_username)
 mongo_root_password=$(required_json_field "$mongodb_secret" root_password)
@@ -75,6 +76,10 @@ jwt_value=$(required_json_field "$jwt_secret" jwt_secret)
 jwt_refresh_value=$(required_json_field "$jwt_secret" jwt_refresh_secret)
 creds_key=$(required_json_field "$jwt_secret" creds_key)
 creds_iv=$(required_json_field "$jwt_secret" creds_iv)
+cost_dashboard_username=$(required_json_field "$cost_dashboard_secret" basic_auth_username)
+cost_dashboard_password_hash=$(required_json_field "$cost_dashboard_secret" basic_auth_password_hash)
+cost_dashboard_mongo_username=$(required_json_field "$cost_dashboard_secret" mongo_username)
+cost_dashboard_mongo_password=$(required_json_field "$cost_dashboard_secret" mongo_password)
 
 if jq -e '.google_key | strings | select(length > 0)' >/dev/null 2>&1 <<<"$gemini_secret"; then
   google_key=$(required_json_field "$gemini_secret" google_key)
@@ -83,6 +88,7 @@ else
 fi
 
 mongo_uri="mongodb://$(url_encode "$mongo_app_username"):$(url_encode "$mongo_app_password")@mongodb:27017/LibreChat?authSource=LibreChat"
+cost_dashboard_mongo_uri="mongodb://$(url_encode "$cost_dashboard_mongo_username"):$(url_encode "$cost_dashboard_mongo_password")@mongodb:27017/LibreChat?authSource=LibreChat"
 
 umask 077
 env_file="$runtime_dir/.env"
@@ -124,6 +130,9 @@ MONGO_INITDB_ROOT_PASSWORD=$mongo_root_password
 MONGO_APP_USERNAME=$mongo_app_username
 MONGO_APP_PASSWORD=$mongo_app_password
 MONGO_URI=$mongo_uri
+COST_DASHBOARD_USERNAME=$cost_dashboard_username
+COST_DASHBOARD_PASSWORD_HASH='$cost_dashboard_password_hash'
+COST_DASHBOARD_MONGO_URI=$cost_dashboard_mongo_uri
 BEDROCK_AWS_DEFAULT_REGION=$aws_region
 BEDROCK_AWS_MODELS=eu.anthropic.claude-haiku-4-5-20251001-v1:0,eu.anthropic.claude-sonnet-5,eu.anthropic.claude-opus-5,eu.amazon.nova-micro-v1:0,eu.amazon.nova-lite-v1:0,eu.amazon.nova-pro-v1:0
 GOOGLE_KEY=$google_key

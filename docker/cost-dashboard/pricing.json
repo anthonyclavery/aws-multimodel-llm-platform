@@ -1,0 +1,13 @@
+{
+  "currency": "USD",
+  "catalogVersion": "2026-10-02",
+  "models": {
+    "eu.anthropic.claude-opus-5": { "provider": "Amazon Bedrock", "inputPerMillion": 5, "outputPerMillion": 25 },
+    "eu.anthropic.claude-sonnet-5": { "provider": "Amazon Bedrock", "inputPerMillion": 2, "outputPerMillion": 10 },
+    "eu.anthropic.claude-haiku-4-5-20251001-v1:0": { "provider": "Amazon Bedrock", "inputPerMillion": 1, "outputPerMillion": 5 },
+    "eu.amazon.nova-micro-v1:0": { "provider": "Amazon Bedrock", "inputPerMillion": 0.035, "outputPerMillion": 0.14 },
+    "eu.amazon.nova-lite-v1:0": { "provider": "Amazon Bedrock", "inputPerMillion": 0.06, "outputPerMillion": 0.24 },
+    "eu.amazon.nova-pro-v1:0": { "provider": "Amazon Bedrock", "inputPerMillion": 0.8, "outputPerMillion": 3.2 },
+    "gemini-3.5-flash": { "provider": "Google Gemini", "inputPerMillion": 1.5, "outputPerMillion": 9 }
+  }
+}
