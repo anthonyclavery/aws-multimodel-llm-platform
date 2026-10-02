@@ -131,6 +131,7 @@ approved by the repository owner.
 The approval is intentionally a GitHub action, not an automatic action of the
 deployment agent. After approval, the agent rechecks the exact commit, CI
 checks and approval job before merging or applying an infrastructure plan.
+See the [GitHub approval procedure](docs/operations/github-human-approval.md).
 
 ## Project Status
 
