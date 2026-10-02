@@ -2,15 +2,17 @@
 set -euo pipefail
 
 usage() {
-  printf '%s\n' "Usage: $0 [--branch <Git branch>]"
+  printf '%s\n' "Usage: $0 [--branch <Git branch>] [--image <immutable image digest>]"
 }
 
 branch='main'
+requested_image=''
 compose_project='aws-multimodel-llm-platform-v0'
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --branch) branch=${2:?}; shift 2 ;;
+    --image) requested_image=${2:?}; shift 2 ;;
     --help) usage; exit 0 ;;
     *) usage >&2; exit 2 ;;
   esac
@@ -39,6 +41,13 @@ if [[ ! -f "$env_file" ]]; then
 fi
 
 image=$(sudo sed -n 's/^LIBRECHAT_IMAGE=//p' "$env_file")
+if [[ -n "$requested_image" ]]; then
+  if [[ ! "$requested_image" =~ ^[a-z0-9][a-z0-9./:_@-]*@sha256:[a-f0-9]{64}$ ]]; then
+    printf '%s\n' 'The requested LibreChat image must be a lowercase immutable image digest.' >&2
+    exit 2
+  fi
+  image="$requested_image"
+fi
 if [[ "$image" != *@sha256:* ]]; then
   printf '%s\n' 'LIBRECHAT_IMAGE must use an immutable digest before deployment.' >&2
   exit 1
@@ -75,6 +84,10 @@ read -r confirmation
 if [[ "$confirmation" != "DEPLOY $commit" ]]; then
   printf '%s\n' 'Deployment cancelled. Containers were not changed.'
   exit 0
+fi
+
+if [[ -n "$requested_image" ]]; then
+  sudo sed -i "s|^LIBRECHAT_IMAGE=.*$|LIBRECHAT_IMAGE=$requested_image|" "$env_file"
 fi
 
 "${compose[@]}" pull

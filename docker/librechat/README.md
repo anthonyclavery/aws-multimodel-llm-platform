@@ -23,6 +23,14 @@ Persistent application directories are mounted from `RUNTIME_DATA_ROOT` on the
 EC2 EBS volume. They include the MongoDB data, Caddy certificates and LibreChat
 uploads. They are intentionally not anonymous Docker volumes.
 
+To upgrade LibreChat, pass an approved, immutable image digest to the normal
+deployment script. The script shows the selected image and updates the ignored
+runtime `.env` only after the explicit deployment confirmation:
+
+```sh
+./scripts/deploy-librechat-on-ec2.sh --image registry.example/librechat@sha256:<digest>
+```
+
 For a blank EC2, run the stack on the target host with:
 
 ```sh
