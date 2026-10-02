@@ -33,7 +33,8 @@ install -d -m 0700 \
   /opt/aws-multimodel-llm-platform/data/mongodb \
   /opt/aws-multimodel-llm-platform/data/mongodb-configdb \
   /opt/aws-multimodel-llm-platform/data/caddy/data \
-  /opt/aws-multimodel-llm-platform/data/caddy/config \
+  /opt/aws-multimodel-llm-platform/data/caddy/config
+install -d -m 0750 -o 1000 -g 1000 \
   /opt/aws-multimodel-llm-platform/data/librechat/app-data \
   /opt/aws-multimodel-llm-platform/data/librechat/uploads \
   /opt/aws-multimodel-llm-platform/data/librechat/logs \

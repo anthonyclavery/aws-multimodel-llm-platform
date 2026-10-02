@@ -108,7 +108,8 @@ install -d -m 0700 \
   "$data_root/mongodb" \
   "$data_root/mongodb-configdb" \
   "$data_root/caddy/data" \
-  "$data_root/caddy/config" \
+  "$data_root/caddy/config"
+install -d -m 0750 -o 1000 -g 1000 \
   "$data_root/librechat/app-data" \
   "$data_root/librechat/uploads" \
   "$data_root/librechat/logs" \
