@@ -21,7 +21,7 @@ trap 'unset secret_json creds_key creds_iv; rm -f "${tmp_file:-}"' EXIT
 
 umask 077
 tmp_file=$(mktemp "${env_file}.XXXXXX")
-awk -v key="$creds_key" -v iv="$creds_iv" '
+sudo awk -v key="$creds_key" -v iv="$creds_iv" '
   /^CREDS_KEY=/ { print "CREDS_KEY=" key; key_found = 1; next }
   /^CREDS_IV=/ { print "CREDS_IV=" iv; iv_found = 1; next }
   { print }

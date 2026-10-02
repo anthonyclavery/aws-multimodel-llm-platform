@@ -20,5 +20,9 @@ secret update, synchronize the repository on the EC2 instance, then run:
 ./scripts/refresh-librechat-credentials-on-ec2.sh
 ```
 
+The script reads and replaces the root-owned runtime file through narrowly
+scoped `sudo` calls. It must be started as `ssm-user`, without prefixing the
+whole command with `sudo`.
+
 Only then run the approved LibreChat image upgrade using the normal deployment
 script. New installations generate hexadecimal credentials directly.
