@@ -27,7 +27,20 @@ export AWS_PROFILE="$aws_profile"
 export AWS_REGION="$aws_region"
 
 terraform -chdir="$bootstrap_dir" init -backend=false -reconfigure
-terraform -chdir="$bootstrap_dir" apply
+
+bootstrap_plan=$(mktemp "${TMPDIR:-/tmp}/aws-multimodel-bootstrap-XXXXXX.tfplan")
+trap 'rm -f "$bootstrap_plan"' EXIT
+terraform -chdir="$bootstrap_dir" plan -input=false -lock-timeout=5m -out="$bootstrap_plan"
+terraform -chdir="$bootstrap_dir" show -no-color "$bootstrap_plan"
+
+printf '%s' 'Type APPLY_BOOTSTRAP to create or modify the Terraform state backend: '
+read -r confirmation
+if [[ "$confirmation" != 'APPLY_BOOTSTRAP' ]]; then
+  printf '%s\n' 'Bootstrap cancelled. No AWS resource was changed.'
+  exit 0
+fi
+
+terraform -chdir="$bootstrap_dir" apply -input=false "$bootstrap_plan"
 
 cp "$bootstrap_dir/backend.tf.template" "$bootstrap_dir/backend.tf"
 

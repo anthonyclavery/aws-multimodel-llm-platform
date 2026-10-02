@@ -15,6 +15,30 @@ platform/v0/terraform.tfstate
 Both configurations use a dedicated DynamoDB lock table with the required
 `LockID` primary key. The table is encrypted and uses on-demand billing.
 
+## Human approval for infrastructure changes
+
+Terraform application is intentionally separate from planning. The operator
+must inspect the complete plan before any AWS mutation. Codex must also stop
+after presenting a plan and wait for explicit user approval in the chat.
+
+After the remote backend is configured, create a reviewed plan from WSL:
+
+```sh
+./scripts/terraform-plan.sh
+```
+
+The command stores an ignored `.tfplan` file in `.terraform-plans`, displays
+its full content and its SHA-256 fingerprint. Apply only that reviewed file:
+
+```sh
+./scripts/terraform-apply-plan.sh --plan .terraform-plans/platform-<timestamp>.tfplan
+```
+
+The apply script displays the plan again and requires the exact phrase
+`APPLY <SHA-256>` typed interactively. A plan is refused if it was not created
+under `.terraform-plans`. Never use `terraform apply` directly for the
+platform configuration.
+
 From WSL, authenticate the AWS SSO profile, then migrate the existing local
 states once:
 
@@ -23,9 +47,9 @@ aws sso login --profile aws-multimodel-llm
 ./scripts/bootstrap-terraform-state.sh
 ```
 
-The script first creates the protected bucket through a locally held bootstrap
-state. It then creates an ignored backend configuration from the tracked
-template and migrates that bootstrap state and the existing platform state to
-S3. It prompts for Terraform approval before creating the bucket. Do not delete
-the existing local state files manually. Terraform preserves a local backup
-during migration.
+The script first shows the protected-bucket plan through a locally held
+bootstrap state and requires `APPLY_BOOTSTRAP` typed interactively. It then
+creates an ignored backend configuration from the tracked template and migrates
+that bootstrap state and the existing platform state to S3. Do not delete the
+existing local state files manually. Terraform preserves a local backup during
+migration.
