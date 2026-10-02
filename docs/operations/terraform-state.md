@@ -18,8 +18,9 @@ Both configurations use a dedicated DynamoDB lock table with the required
 ## Human approval for infrastructure changes
 
 Terraform application is intentionally separate from planning. The operator
-must inspect the complete plan before any AWS mutation. Codex must also stop
-after presenting a plan and wait for explicit user approval in the chat.
+must inspect the complete plan before any AWS mutation. The operator runs both
+the plan and apply commands locally. Codex can analyse an output shared by the
+operator, but never runs Terraform plan or apply on the operator's behalf.
 
 After the remote backend is configured, create a reviewed plan from WSL:
 

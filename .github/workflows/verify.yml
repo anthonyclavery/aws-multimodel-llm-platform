@@ -39,14 +39,14 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
       - name: Check shell scripts
-        run: bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh
+        run: bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh scripts/deploy-librechat-on-ec2.sh
       - name: Check MongoDB initialization script
         run: node --check docker/librechat/mongodb-init.js
       - name: Validate Compose interpolation
         working-directory: docker/librechat
         run: >-
-          cp .env.example .env &&
-          docker compose --env-file .env -f compose.yaml config --quiet
+          RUNTIME_ENV_FILE=.env.example
+          docker compose --env-file .env.example -f compose.yaml config --quiet
       - name: Validate Caddy configuration
         working-directory: docker/librechat
         run: >-

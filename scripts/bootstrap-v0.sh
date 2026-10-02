@@ -2,13 +2,13 @@
 set -euo pipefail
 
 usage() {
-  printf '%s\n' "Usage: sudo $0 --domain <DNS name> --acme-email <email> [--aws-region <region>] [--image <reference>]"
+  printf '%s\n' "Usage: sudo $0 --domain <DNS name> --acme-email <email> --image <immutable digest> [--aws-region <region>]"
 }
 
 domain=''
 acme_email=''
 aws_region='eu-central-1'
-librechat_image='registry.librechat.ai/librechat-ai/librechat-dev:latest'
+librechat_image=''
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -21,7 +21,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ $EUID -ne 0 || -z "$domain" || -z "$acme_email" ]]; then
+if [[ $EUID -ne 0 || -z "$domain" || -z "$acme_email" || "$librechat_image" != *@sha256:* ]]; then
+  printf '%s\n' 'An immutable LibreChat image digest is required with --image.' >&2
   usage >&2
   exit 2
 fi
