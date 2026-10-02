@@ -47,8 +47,8 @@ mongo_root_password=$(openssl rand -hex 32)
 mongo_app_password=$(openssl rand -hex 32)
 jwt_secret=$(openssl rand -hex 48)
 jwt_refresh_secret=$(openssl rand -hex 48)
-creds_key=$(openssl rand -base64 32 | tr -d '\n')
-creds_iv=$(openssl rand -base64 16 | tr -d '\n')
+creds_key=$(openssl rand -hex 32)
+creds_iv=$(openssl rand -hex 16)
 trap 'unset google_key mongo_root_password mongo_app_password jwt_secret jwt_refresh_secret creds_key creds_iv' EXIT
 
 mongodb_json=$(jq -cn \
