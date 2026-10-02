@@ -1,8 +1,9 @@
 # LibreChat runtime
 
 This directory is the V0 runtime stack. Caddy is the only service with host
-ports. LibreChat and MongoDB share an internal Docker network, and MongoDB has
-no published port. The supported database is MongoDB 7.0.41, pinned by digest.
+ports. LibreChat has outbound network access for Bedrock and Gemini but no
+published port. MongoDB is isolated on a dedicated internal network and has no
+published port. The supported database is MongoDB 7.0.41, pinned by digest.
 
 Copy `.env.example` to `.env` only on the EC2 instance after the bootstrap
 script has retrieved the values from AWS Secrets Manager. The resulting `.env`

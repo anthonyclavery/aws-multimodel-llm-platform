@@ -44,6 +44,17 @@ if [[ "$image" != *@sha256:* ]]; then
   exit 1
 fi
 
+data_root=$(sudo sed -n 's/^RUNTIME_DATA_ROOT=//p' "$env_file")
+if [[ "$data_root" != '/opt/aws-multimodel-llm-platform/data' ]]; then
+  printf '%s\n' 'RUNTIME_DATA_ROOT must be the reviewed EC2 EBS data directory.' >&2
+  exit 1
+fi
+sudo install -d -m 0750 -o 1000 -g 1000 \
+  "$data_root/librechat/app-data" \
+  "$data_root/librechat/uploads" \
+  "$data_root/librechat/logs" \
+  "$data_root/librechat/images"
+
 while IFS= read -r container_id; do
   [[ -z "$container_id" ]] && continue
   container_project=$(sudo docker inspect --format '{{ index .Config.Labels "com.docker.compose.project" }}' "$container_id")

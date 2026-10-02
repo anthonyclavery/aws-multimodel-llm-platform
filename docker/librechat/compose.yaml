@@ -41,6 +41,7 @@ services:
         condition: service_healthy
     networks:
       - application
+      - database
 
   mongodb:
     image: mongo:7.0.41@sha256:b096b4cb9269f3ebcf363be63f1c50920f786879d03a1890347a3bf33f1f0df0
@@ -65,9 +66,10 @@ services:
       retries: 12
       start_period: 20s
     networks:
-      - application
+      - database
 
 networks:
   edge:
   application:
+  database:
     internal: true
