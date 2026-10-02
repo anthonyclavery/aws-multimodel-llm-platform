@@ -32,8 +32,8 @@ cp "$bootstrap_dir/backend.tf.template" "$bootstrap_dir/backend.tf"
 backend_args=(
   "-backend-config=bucket=$(terraform -chdir="$bootstrap_dir" output -raw terraform_state_bucket)"
   "-backend-config=region=$aws_region"
-  '-backend-config=encrypt=true'
-  '-backend-config=use_lockfile=true'
+  "-backend-config=profile=$aws_profile"
+  "-backend-config=dynamodb_table=$(terraform -chdir="$bootstrap_dir" output -raw terraform_lock_table)"
 )
 
 terraform -chdir="$bootstrap_dir" init -migrate-state -force-copy -input=false "${backend_args[@]}" \
@@ -41,4 +41,4 @@ terraform -chdir="$bootstrap_dir" init -migrate-state -force-copy -input=false "
 terraform -chdir="$platform_dir" init -migrate-state -force-copy -input=false "${backend_args[@]}" \
   -backend-config=key=platform/v0/terraform.tfstate
 
-printf '%s\n' 'Terraform state migration completed. Both state files now use the S3 backend with native S3 locking.'
+printf '%s\n' 'Terraform state migration completed. Both state files now use the encrypted S3 backend with DynamoDB locking.'

@@ -1,5 +1,6 @@
 locals {
   terraform_state_bucket_name = "${var.project_name}-${data.aws_caller_identity.current.account_id}-${var.aws_region}-tfstate"
+  terraform_lock_table_name   = "${var.project_name}-${var.environment}-terraform-lock"
 }
 
 resource "aws_s3_bucket" "terraform_state" {
@@ -78,4 +79,27 @@ data "aws_iam_policy_document" "terraform_state_transport" {
 resource "aws_s3_bucket_policy" "terraform_state_transport" {
   bucket = aws_s3_bucket.terraform_state.id
   policy = data.aws_iam_policy_document.terraform_state_transport.json
+}
+
+resource "aws_dynamodb_table" "terraform_lock" {
+  name         = local.terraform_lock_table_name
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+
+  server_side_encryption {
+    enabled = true
+  }
+
+  tags = {
+    Name        = local.terraform_lock_table_name
+    Project     = var.project_name
+    Environment = var.environment
+    Purpose     = "TerraformStateLock"
+    ManagedBy   = "Terraform"
+  }
 }

@@ -12,8 +12,8 @@ bootstrap/terraform.tfstate
 platform/v0/terraform.tfstate
 ```
 
-Both configurations use the S3 backend native lock file. A DynamoDB table is
-not required.
+Both configurations use a dedicated DynamoDB lock table with the required
+`LockID` primary key. The table is encrypted and uses on-demand billing.
 
 From WSL, authenticate the AWS SSO profile, then migrate the existing local
 states once:
