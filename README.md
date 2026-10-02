@@ -133,6 +133,14 @@ deployment agent. After approval, the agent rechecks the exact commit, CI
 checks and approval job before merging or applying an infrastructure plan.
 See the [GitHub approval procedure](docs/operations/github-human-approval.md).
 
+## Operator-controlled deployments
+
+LibreChat releases are executed by the operator from the EC2 repository clone.
+The [EC2 release procedure](docs/operations/ec2-release.md) synchronizes the
+reviewed Git revision, validates the immutable image reference and requires an
+interactive confirmation before Compose changes any container. Terraform plan
+and apply are also executed only by the operator from WSL.
+
 ## Project Status
 
 Work in progress.

@@ -1,9 +1,11 @@
+name: aws-multimodel-llm-platform-v0
+
 services:
   caddy:
     image: caddy:2.10.0-alpine
     restart: unless-stopped
     env_file:
-      - .env
+      - ${RUNTIME_ENV_FILE:-.env}
     ports:
       - "80:80"
       - "443:443"
@@ -22,7 +24,7 @@ services:
     image: ${LIBRECHAT_IMAGE:?Set LIBRECHAT_IMAGE in .env}
     restart: unless-stopped
     env_file:
-      - .env
+      - ${RUNTIME_ENV_FILE:-.env}
     environment:
       HOST: 0.0.0.0
       NODE_ENV: production
@@ -43,7 +45,7 @@ services:
     image: mongo:8.0.20
     restart: unless-stopped
     env_file:
-      - .env
+      - ${RUNTIME_ENV_FILE:-.env}
     command: ["mongod", "--auth", "--bind_ip_all"]
     volumes:
       - mongodb_data:/data/db

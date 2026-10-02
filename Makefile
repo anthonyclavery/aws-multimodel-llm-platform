@@ -21,8 +21,8 @@ bootstrap-terraform-validate:
 	terraform -chdir=$(BOOTSTRAP_TERRAFORM_DIR) validate
 
 runtime-validate:
-	bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh
+	bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh scripts/deploy-librechat-on-ec2.sh
 	node --check docker/librechat/mongodb-init.js
-	cd docker/librechat && docker compose --env-file .env.example -f compose.yaml config --quiet
+	cd docker/librechat && RUNTIME_ENV_FILE=.env.example docker compose --env-file .env.example -f compose.yaml config --quiet
 
 verify: terraform-fmt terraform-validate bootstrap-terraform-fmt bootstrap-terraform-validate runtime-validate
