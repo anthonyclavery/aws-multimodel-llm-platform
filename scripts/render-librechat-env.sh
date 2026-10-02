@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  printf '%s\n' "Usage: $0 --domain <DNS name> --acme-email <email> --image <immutable digest> [--aws-region <region>] [--project-name <name>] [--environment <name>]"
+  printf '%s\n' "Usage: $0 --domain <DNS name> --acme-email <email> --image <immutable digest> [--aws-region <region>] [--project-name <name>] [--environment <name>] [--runtime-data-root <absolute path>] [--allow-registration true|false]"
 }
 
 domain=''
@@ -11,6 +11,8 @@ aws_region='eu-central-1'
 project_name='aws-multimodel-llm-platform'
 environment_name='v0'
 librechat_image=''
+runtime_data_root='/opt/aws-multimodel-llm-platform/data'
+allow_registration='false'
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -20,12 +22,14 @@ while [[ $# -gt 0 ]]; do
     --project-name) project_name=${2:?}; shift 2 ;;
     --environment) environment_name=${2:?}; shift 2 ;;
     --image) librechat_image=${2:?}; shift 2 ;;
+    --runtime-data-root) runtime_data_root=${2:?}; shift 2 ;;
+    --allow-registration) allow_registration=${2:?}; shift 2 ;;
     --help) usage; exit 0 ;;
     *) usage >&2; exit 2 ;;
   esac
 done
 
-if [[ -z "$domain" || -z "$acme_email" || "$librechat_image" != *@sha256:* ]]; then
+if [[ -z "$domain" || -z "$acme_email" || "$librechat_image" != *@sha256:* || "$runtime_data_root" != /* || "$allow_registration" != 'true' && "$allow_registration" != 'false' ]]; then
   printf '%s\n' 'An immutable LibreChat image digest is required with --image.' >&2
   usage >&2
   exit 2
@@ -88,6 +92,7 @@ trap 'rm -f "$tmp_file"' EXIT
 cat >"$tmp_file" <<EOF
 CADDY_DOMAIN=$domain
 CADDY_ACME_EMAIL=$acme_email
+RUNTIME_DATA_ROOT=$runtime_data_root
 LIBRECHAT_IMAGE=$librechat_image
 DOMAIN_CLIENT=https://$domain
 DOMAIN_SERVER=https://$domain
@@ -102,7 +107,7 @@ CONSOLE_JSON=true
 LOG_TO_FILE=false
 ENDPOINTS=bedrock,google
 ALLOW_EMAIL_LOGIN=true
-ALLOW_REGISTRATION=false
+ALLOW_REGISTRATION=$allow_registration
 ALLOW_SOCIAL_LOGIN=false
 ALLOW_SOCIAL_REGISTRATION=false
 ALLOW_PASSWORD_RESET=false

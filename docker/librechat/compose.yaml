@@ -12,8 +12,8 @@ services:
       - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - ${RUNTIME_DATA_ROOT:?Set RUNTIME_DATA_ROOT in .env}/caddy/data:/data
+      - ${RUNTIME_DATA_ROOT:?Set RUNTIME_DATA_ROOT in .env}/caddy/config:/config
     depends_on:
       - librechat
     networks:
@@ -32,9 +32,10 @@ services:
       - "3080"
     volumes:
       - ../../config/librechat/librechat.yaml:/app/librechat.yaml:ro
-      - librechat_data:/app/data
-      - librechat_uploads:/app/uploads
-      - librechat_logs:/app/api/logs
+      - ${RUNTIME_DATA_ROOT:?Set RUNTIME_DATA_ROOT in .env}/librechat/app-data:/app/data
+      - ${RUNTIME_DATA_ROOT:?Set RUNTIME_DATA_ROOT in .env}/librechat/uploads:/app/uploads
+      - ${RUNTIME_DATA_ROOT:?Set RUNTIME_DATA_ROOT in .env}/librechat/logs:/app/logs
+      - ${RUNTIME_DATA_ROOT:?Set RUNTIME_DATA_ROOT in .env}/librechat/images:/app/client/public/images
     depends_on:
       mongodb:
         condition: service_healthy
@@ -42,13 +43,14 @@ services:
       - application
 
   mongodb:
-    image: mongo:8.0.20
+    image: mongo:7.0.41@sha256:b096b4cb9269f3ebcf363be63f1c50920f786879d03a1890347a3bf33f1f0df0
     restart: unless-stopped
     env_file:
       - ${RUNTIME_ENV_FILE:-.env}
     command: ["mongod", "--auth", "--bind_ip_all"]
     volumes:
-      - mongodb_data:/data/db
+      - ${RUNTIME_DATA_ROOT:?Set RUNTIME_DATA_ROOT in .env}/mongodb:/data/db
+      - ${RUNTIME_DATA_ROOT:?Set RUNTIME_DATA_ROOT in .env}/mongodb-configdb:/data/configdb
       - ./mongodb-init.js:/docker-entrypoint-initdb.d/10-create-librechat-user.js:ro
     healthcheck:
       test:
@@ -69,11 +71,3 @@ networks:
   edge:
   application:
     internal: true
-
-volumes:
-  caddy_data:
-  caddy_config:
-  librechat_data:
-  librechat_uploads:
-  librechat_logs:
-  mongodb_data:
