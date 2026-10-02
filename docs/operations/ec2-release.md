@@ -18,10 +18,34 @@ conteneurs.
 
 Le script refuse aussi d'écraser un conteneur publiant HTTPS qui appartient à
 un autre projet Compose. C'est précisément le cas du déploiement manuel actuel
-nommé `multimodel`. Sa reprise exige un plan de migration distinct incluant une
-sauvegarde MongoDB, le nom de domaine, le certificat Caddy et une stratégie de
-retour arrière.
+nommé `multimodel` : il faut d'abord le remplacer explicitement par la
+procédure d'installation vierge ci-dessous.
 
-Le premier déploiement géré nécessite toujours `bootstrap-v0.sh`, exécuté avec
-un nom de domaine validé, une adresse ACME et une référence d'image contenant
-un digest `@sha256:`. Le script de publication sert aux évolutions suivantes.
+La pile manuelle actuelle peut être remplacée par une installation LibreChat
+vierge au moyen de `rebuild-librechat-on-ec2.sh`. Ce script ne touche ni aux
+ressources AWS, ni à l'Elastic IP, ni aux conteneurs non liés à LibreChat. Il
+supprime uniquement les conteneurs `multimodel-*` et les répertoires de données
+LibreChat sous `/opt/aws-multimodel-llm-platform/data` après la confirmation
+exacte demandée.
+
+Depuis l'EC2, après fusion de la PR et validation du commit sur `main`, lancer
+par exemple :
+
+```sh
+sudo ./scripts/rebuild-librechat-on-ec2.sh \
+  --acme-email "ton-adresse@example.com" \
+  --image "registry.librechat.ai/danny-avila/librechat@sha256:c5db3331b845e1f289f8d04c0c77936c4bbe372f76730a804abc1c37e44d23a9" \
+  --open-registration
+```
+
+Le domaine par défaut est `librechat.anthonyclavery.fr` et l'Elastic IP reste
+inchangée. L'option `--open-registration` est réservée à la création du premier
+compte local. Immédiatement après cette création, fermer les inscriptions :
+
+```sh
+sudo ./scripts/close-librechat-registration-on-ec2.sh
+```
+
+Les déploiements suivants utilisent `deploy-librechat-on-ec2.sh`. Aucun de ces
+scripts ne lance Terraform : `terraform plan` et `terraform apply` restent des
+actions manuelles de l'opérateur.

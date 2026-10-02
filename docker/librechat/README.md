@@ -2,7 +2,7 @@
 
 This directory is the V0 runtime stack. Caddy is the only service with host
 ports. LibreChat and MongoDB share an internal Docker network, and MongoDB has
-no published port.
+no published port. The supported database is MongoDB 7.0.41, pinned by digest.
 
 Copy `.env.example` to `.env` only on the EC2 instance after the bootstrap
 script has retrieved the values from AWS Secrets Manager. The resulting `.env`
@@ -18,7 +18,11 @@ Before first startup, the chosen DNS name must resolve to the EC2 Elastic IP so
 that Caddy can obtain and renew its TLS certificate. Replace the floating
 LibreChat image tag by the validated immutable digest before production use.
 
-Run the stack on the target host with:
+Persistent application directories are mounted from `RUNTIME_DATA_ROOT` on the
+EC2 EBS volume. They include the MongoDB data, Caddy certificates and LibreChat
+uploads. They are intentionally not anonymous Docker volumes.
+
+For a blank EC2, run the stack on the target host with:
 
 ```sh
 docker compose --env-file .env -f compose.yaml up -d
