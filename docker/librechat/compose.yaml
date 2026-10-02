@@ -78,6 +78,9 @@ services:
     environment:
       COST_DASHBOARD_PORT: "8080"
       COST_EXPLORER_REGION: us-east-1
+      COST_DASHBOARD_PRICING_FILE: /var/lib/cost-dashboard/pricing.json
+    volumes:
+      - ${RUNTIME_DATA_ROOT:?Set RUNTIME_DATA_ROOT in .env}/cost-dashboard:/var/lib/cost-dashboard:ro
     expose:
       - "8080"
     read_only: true

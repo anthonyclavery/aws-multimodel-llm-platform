@@ -146,6 +146,7 @@ data "aws_iam_policy_document" "ec2_cost_explorer_read" {
 
     actions = [
       "ce:GetCostAndUsage",
+      "pricing:GetProducts",
     ]
 
     resources = ["*"]

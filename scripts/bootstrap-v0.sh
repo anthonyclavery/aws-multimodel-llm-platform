@@ -38,7 +38,8 @@ install -d -m 0750 -o 1000 -g 1000 \
   /opt/aws-multimodel-llm-platform/data/librechat/app-data \
   /opt/aws-multimodel-llm-platform/data/librechat/uploads \
   /opt/aws-multimodel-llm-platform/data/librechat/logs \
-  /opt/aws-multimodel-llm-platform/data/librechat/images
+  /opt/aws-multimodel-llm-platform/data/librechat/images \
+  /opt/aws-multimodel-llm-platform/data/cost-dashboard
 
 apt-get update
 apt-get install -y ca-certificates curl gnupg jq awscli
@@ -63,3 +64,4 @@ docker compose --env-file .env -f compose.yaml pull --ignore-buildable
 docker compose --env-file .env -f compose.yaml build --pull cost-dashboard
 docker compose --env-file .env -f compose.yaml up -d
 docker compose --env-file .env -f compose.yaml ps
+"$repo_root/scripts/install-cost-pricing-sync-on-ec2.sh"

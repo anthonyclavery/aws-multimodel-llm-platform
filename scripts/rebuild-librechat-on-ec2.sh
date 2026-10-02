@@ -57,7 +57,8 @@ git -c safe.directory="$repo_root" merge --ff-only origin/main
 for secret_id in \
   aws-multimodel-llm-platform-v0/mongodb-credentials \
   aws-multimodel-llm-platform-v0/librechat-jwt \
-  aws-multimodel-llm-platform-v0/gemini-api-key; do
+  aws-multimodel-llm-platform-v0/gemini-api-key \
+  aws-multimodel-llm-platform-v0/cost-dashboard-credentials; do
   if ! aws secretsmanager get-secret-value --region "$aws_region" --secret-id "$secret_id" --query SecretString --output text >/dev/null 2>&1; then
     printf 'Required secret %s has no readable current value. Rebuild aborted before data removal.\n' "$secret_id" >&2
     exit 1
@@ -108,12 +109,14 @@ install -d -m 0700 \
   "$data_root/mongodb" \
   "$data_root/mongodb-configdb" \
   "$data_root/caddy/data" \
-  "$data_root/caddy/config"
+  "$data_root/caddy/config" \
+  "$data_root/cost-dashboard"
 install -d -m 0750 -o 1000 -g 1000 \
   "$data_root/librechat/app-data" \
   "$data_root/librechat/uploads" \
   "$data_root/librechat/logs" \
-  "$data_root/librechat/images"
+  "$data_root/librechat/images" \
+  "$data_root/cost-dashboard"
 
 "$repo_root/scripts/render-librechat-env.sh" \
   --domain "$domain" \
@@ -128,6 +131,7 @@ compose=(docker compose -p "$compose_project" --env-file "$env_file" -f "$compos
 "${compose[@]}" pull --ignore-buildable
 "${compose[@]}" build --pull cost-dashboard
 "${compose[@]}" up -d
+"$repo_root/scripts/install-cost-pricing-sync-on-ec2.sh"
 "${compose[@]}" ps
 
 curl --fail --silent --show-error --retry 12 --retry-delay 5 \

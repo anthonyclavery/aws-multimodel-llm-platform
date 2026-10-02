@@ -5,7 +5,7 @@ WORKDIR /srv/app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-COPY server.mjs pricing.json ./
+COPY server.mjs sync-pricing.mjs pricing.json ./
 
 USER node
 EXPOSE 8080

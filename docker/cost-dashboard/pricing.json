@@ -1,6 +1,11 @@
 {
   "currency": "USD",
   "catalogVersion": "2026-10-02",
+  "sources": {
+    "nova": "AWS Price List API, EU (Frankfurt), on-demand inference",
+    "gemini": "Google Gemini API pricing page, paid tier",
+    "claude": "Reviewed baseline pending EC2 startup synchronization."
+  },
   "models": {
     "eu.anthropic.claude-opus-5": { "provider": "Amazon Bedrock", "inputPerMillion": 5, "outputPerMillion": 25 },
     "eu.anthropic.claude-sonnet-5": { "provider": "Amazon Bedrock", "inputPerMillion": 2, "outputPerMillion": 10 },

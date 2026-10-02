@@ -39,7 +39,7 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
       - name: Check shell scripts
-        run: bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh scripts/deploy-librechat-on-ec2.sh scripts/rebuild-librechat-on-ec2.sh scripts/close-librechat-registration-on-ec2.sh scripts/initialize-v0-secrets.sh scripts/initialize-cost-dashboard-secret.sh scripts/configure-cost-dashboard-mongodb-on-ec2.sh scripts/migrate-librechat-credentials-to-hex.sh scripts/refresh-librechat-credentials-on-ec2.sh
+        run: bash -n scripts/bootstrap-v0.sh scripts/render-librechat-env.sh scripts/deploy-librechat-on-ec2.sh scripts/rebuild-librechat-on-ec2.sh scripts/close-librechat-registration-on-ec2.sh scripts/initialize-v0-secrets.sh scripts/initialize-cost-dashboard-secret.sh scripts/configure-cost-dashboard-mongodb-on-ec2.sh scripts/migrate-librechat-credentials-to-hex.sh scripts/refresh-librechat-credentials-on-ec2.sh scripts/install-cost-pricing-sync-on-ec2.sh scripts/sync-cost-pricing-on-ec2.sh
       - name: Check MongoDB initialization script
         run: node --check docker/librechat/mongodb-init.js
       - name: Set up Node.js for the cost dashboard
@@ -54,6 +54,7 @@ jobs:
           npm ci --omit=dev
           npm audit --omit=dev --audit-level=high
           node --check server.mjs
+          node --check sync-pricing.mjs
       - name: Validate Compose interpolation
         working-directory: docker/librechat
         run: >-
