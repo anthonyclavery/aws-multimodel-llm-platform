@@ -55,6 +55,7 @@ jobs:
           npm audit --omit=dev --audit-level=high
           node --check server.mjs
           node --check sync-pricing.mjs
+          node --input-type=module -e "import { readFileSync } from 'node:fs'; const source = readFileSync('server.mjs', 'utf8'); if (!source.includes(\"fetch('/cost/api/summary?days='+days)\")) throw new Error('The cost dashboard must request its API through the /cost prefix.');"
       - name: Validate Compose interpolation
         working-directory: docker/librechat
         run: >-
