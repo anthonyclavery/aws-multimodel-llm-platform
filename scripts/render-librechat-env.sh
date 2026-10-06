@@ -134,7 +134,6 @@ COST_DASHBOARD_USERNAME=$cost_dashboard_username
 COST_DASHBOARD_PASSWORD_HASH='$cost_dashboard_password_hash'
 COST_DASHBOARD_MONGO_URI=$cost_dashboard_mongo_uri
 BEDROCK_AWS_DEFAULT_REGION=$aws_region
-BEDROCK_AWS_MODELS=eu.anthropic.claude-haiku-4-5-20251001-v1:0,eu.anthropic.claude-sonnet-5,eu.anthropic.claude-opus-5,eu.amazon.nova-micro-v1:0,eu.amazon.nova-lite-v1:0,eu.amazon.nova-pro-v1:0
 GOOGLE_KEY=$google_key
 EOF
 
