@@ -106,6 +106,10 @@ if [[ -n "$requested_image" ]]; then
   sudo sed -i "s|^LIBRECHAT_IMAGE=.*$|LIBRECHAT_IMAGE=$requested_image|" "$env_file"
 fi
 
+# Older generated runtime files contained an explicit allow-list of six Bedrock
+# models. Removing it makes LibreChat use its known compatible serverless models.
+sudo sed -i '/^BEDROCK_AWS_MODELS=/d' "$env_file"
+
 if [[ "$network_migration" == 'true' ]]; then
   "${compose[@]}" down --remove-orphans
 fi

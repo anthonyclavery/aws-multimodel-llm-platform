@@ -41,38 +41,19 @@ resource "aws_iam_instance_profile" "ec2" {
 }
 
 locals {
-  bedrock_inference_profile_arns = [
-    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.anthropic.claude-haiku-4-5-20251001-v1:0",
-    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.anthropic.claude-sonnet-5",
-    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.anthropic.claude-opus-5",
-    "arn:aws:bedrock:eu-central-1:*:inference-profile/global.anthropic.claude-fable-5-1",
-    "arn:aws:bedrock:eu-central-1:*:inference-profile/global.xai.grok-4.6",
-    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.amazon.nova-micro-v1:0",
-    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.amazon.nova-lite-v1:0",
-    "arn:aws:bedrock:eu-central-1:*:inference-profile/eu.amazon.nova-pro-v1:0",
-    "arn:aws:bedrock:eu-central-1:*:inference-profile/global.amazon.nova-2-lite-v1:0",
-  ]
-
-  bedrock_foundation_model_arns = [
-    "arn:aws:bedrock:eu-*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0",
-    "arn:aws:bedrock:eu-*::foundation-model/anthropic.claude-sonnet-5",
-    "arn:aws:bedrock:eu-*::foundation-model/anthropic.claude-opus-5",
-    "arn:aws:bedrock:eu-*::foundation-model/amazon.nova-micro-v1:0",
-    "arn:aws:bedrock:eu-*::foundation-model/amazon.nova-lite-v1:0",
-    "arn:aws:bedrock:eu-*::foundation-model/amazon.nova-pro-v1:0",
-
-    "arn:aws:bedrock:::foundation-model/anthropic.claude-fable-5-1",
-    "arn:aws:bedrock:eu-central-1::foundation-model/anthropic.claude-fable-5-1",
-    "arn:aws:bedrock:::foundation-model/xai.grok-4.6",
-    "arn:aws:bedrock:eu-central-1::foundation-model/xai.grok-4.6",
-    "arn:aws:bedrock:::foundation-model/amazon.nova-2-lite-v1:0",
-    "arn:aws:bedrock:eu-central-1::foundation-model/amazon.nova-2-lite-v1:0",
+  # AWS evaluates permission against a cross-region profile and its destination
+  # foundation model. The EC2 role may invoke Bedrock serverless models and
+  # profiles, but it cannot subscribe to Marketplace products, deploy endpoints
+  # or invoke Marketplace endpoints.
+  bedrock_serverless_inference_resources = [
+    "arn:aws:bedrock:*::foundation-model/*",
+    "arn:aws:bedrock:*:*:inference-profile/*",
   ]
 }
 
 data "aws_iam_policy_document" "ec2_bedrock_inference" {
   statement {
-    sid    = "InvokeApprovedBedrockModels"
+    sid    = "InvokeBedrockServerlessModels"
     effect = "Allow"
 
     actions = [
@@ -80,21 +61,18 @@ data "aws_iam_policy_document" "ec2_bedrock_inference" {
       "bedrock:InvokeModelWithResponseStream",
     ]
 
-    resources = concat(
-      local.bedrock_inference_profile_arns,
-      local.bedrock_foundation_model_arns,
-    )
+    resources = local.bedrock_serverless_inference_resources
   }
 
   statement {
-    sid    = "GetApprovedBedrockInferenceProfiles"
+    sid    = "GetBedrockServerlessInferenceProfiles"
     effect = "Allow"
 
     actions = [
       "bedrock:GetInferenceProfile",
     ]
 
-    resources = local.bedrock_inference_profile_arns
+    resources = ["arn:aws:bedrock:*:*:inference-profile/*"]
   }
 
   statement {
