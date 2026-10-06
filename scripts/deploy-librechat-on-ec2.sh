@@ -106,9 +106,12 @@ if [[ -n "$requested_image" ]]; then
   sudo sed -i "s|^LIBRECHAT_IMAGE=.*$|LIBRECHAT_IMAGE=$requested_image|" "$env_file"
 fi
 
-# Older generated runtime files contained an explicit allow-list of six Bedrock
-# models. Removing it makes LibreChat use its known compatible serverless models.
-sudo sed -i '/^BEDROCK_AWS_MODELS=/d' "$env_file"
+# Do not fall back to LibreChat's embedded model list. AWS is the source of
+# truth for the runtime catalog. A failed discovery preserves the last valid
+# catalog so it cannot make the running service unavailable.
+if ! sudo "$repo_root/scripts/sync-bedrock-model-catalog.sh" --env-file "$env_file"; then
+  printf '%s\n' 'Bedrock model catalog synchronization failed; deploying with the last valid runtime catalog.' >&2
+fi
 
 if [[ "$network_migration" == 'true' ]]; then
   "${compose[@]}" down --remove-orphans
@@ -118,4 +121,5 @@ fi
 "${compose[@]}" build --pull cost-dashboard
 "${compose[@]}" up -d
 sudo "$repo_root/scripts/install-cost-pricing-sync-on-ec2.sh"
+sudo "$repo_root/scripts/install-bedrock-model-catalog-sync-on-ec2.sh"
 "${compose[@]}" ps

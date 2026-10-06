@@ -134,6 +134,9 @@ COST_DASHBOARD_USERNAME=$cost_dashboard_username
 COST_DASHBOARD_PASSWORD_HASH='$cost_dashboard_password_hash'
 COST_DASHBOARD_MONGO_URI=$cost_dashboard_mongo_uri
 BEDROCK_AWS_DEFAULT_REGION=$aws_region
+# BEDROCK_AWS_MODELS is generated from the active Bedrock catalog during
+# deployment and at EC2 startup. It is deliberately not a source-controlled
+# static list.
 GOOGLE_KEY=$google_key
 EOF
 

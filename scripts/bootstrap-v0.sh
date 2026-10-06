@@ -58,6 +58,9 @@ systemctl enable --now docker
   --acme-email "$acme_email" \
   --aws-region "$aws_region" \
   --image "$librechat_image"
+"$repo_root/scripts/sync-bedrock-model-catalog.sh" \
+  --env-file "$repo_root/docker/librechat/.env" \
+  --aws-region "$aws_region"
 
 cd "$repo_root/docker/librechat"
 docker compose --env-file .env -f compose.yaml pull --ignore-buildable
@@ -65,3 +68,4 @@ docker compose --env-file .env -f compose.yaml build --pull cost-dashboard
 docker compose --env-file .env -f compose.yaml up -d
 docker compose --env-file .env -f compose.yaml ps
 "$repo_root/scripts/install-cost-pricing-sync-on-ec2.sh"
+"$repo_root/scripts/install-bedrock-model-catalog-sync-on-ec2.sh"

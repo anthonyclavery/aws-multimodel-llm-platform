@@ -48,6 +48,7 @@ locals {
   bedrock_serverless_inference_resources = [
     "arn:aws:bedrock:*::foundation-model/*",
     "arn:aws:bedrock:*:*:inference-profile/*",
+    "arn:aws:bedrock:*:${data.aws_caller_identity.current.account_id}:project/default",
   ]
 }
 
@@ -65,26 +66,17 @@ data "aws_iam_policy_document" "ec2_bedrock_inference" {
   }
 
   statement {
-    sid    = "GetBedrockServerlessInferenceProfiles"
+    sid    = "DiscoverBedrockServerlessCatalog"
     effect = "Allow"
 
     actions = [
-      "bedrock:GetInferenceProfile",
-    ]
-
-    resources = ["arn:aws:bedrock:*:*:inference-profile/*"]
-  }
-
-  statement {
-    sid    = "ListBedrockInferenceProfiles"
-    effect = "Allow"
-
-    actions = [
+      "bedrock:ListFoundationModels",
       "bedrock:ListInferenceProfiles",
     ]
 
     resources = ["*"]
   }
+
 }
 
 resource "aws_iam_role_policy" "ec2_bedrock_inference" {

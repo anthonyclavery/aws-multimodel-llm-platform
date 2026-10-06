@@ -15,9 +15,13 @@ fast-forward, vérifie que l'image LibreChat est figée par digest et valide le
 fichier Compose. Il affiche ensuite le commit exact et demande
 `DEPLOY <commit>` avant le téléchargement des images et la réconciliation des
 conteneurs. Il retire aussi, après cette confirmation, l'ancienne liste
-explicite de modèles Bedrock de l'environnement runtime afin que LibreChat
-utilise ses modèles serverless compatibles connus. Cette opération ne souscrit
-à aucun modèle Marketplace et ne crée aucun endpoint Marketplace.
+explicite de modèles Bedrock par un catalogue généré depuis les métadonnées AWS
+du compte et de la région. Le catalogue conserve les modèles texte avec réponse
+streaming et les profils d'inférence système actifs, dont les profils `global.*`
+lorsqu'AWS les publie. Cette opération ne souscrit à aucun modèle Marketplace,
+ne crée aucun endpoint Marketplace et ne déclenche aucune inférence. AWS peut
+toutefois refuser ensuite un modèle auquel le compte n'est pas éligible. Dans ce
+cas, l'opérateur doit traiter ce refus dans AWS avant de l'utiliser.
 
 Le script refuse aussi d'écraser un conteneur publiant HTTPS qui appartient à
 un autre projet Compose. C'est précisément le cas du déploiement manuel actuel
