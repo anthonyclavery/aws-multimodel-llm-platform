@@ -14,7 +14,10 @@ Le script refuse un dépôt local modifié, récupère `origin/main` en
 fast-forward, vérifie que l'image LibreChat est figée par digest et valide le
 fichier Compose. Il affiche ensuite le commit exact et demande
 `DEPLOY <commit>` avant le téléchargement des images et la réconciliation des
-conteneurs.
+conteneurs. Il retire aussi, après cette confirmation, l'ancienne liste
+explicite de modèles Bedrock de l'environnement runtime afin que LibreChat
+utilise ses modèles serverless compatibles connus. Cette opération ne souscrit
+à aucun modèle Marketplace et ne crée aucun endpoint Marketplace.
 
 Le script refuse aussi d'écraser un conteneur publiant HTTPS qui appartient à
 un autre projet Compose. C'est précisément le cas du déploiement manuel actuel
