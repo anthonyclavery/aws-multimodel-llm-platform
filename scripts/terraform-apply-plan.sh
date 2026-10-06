@@ -2,13 +2,17 @@
 set -euo pipefail
 
 usage() {
-  printf '%s\n' "Usage: $0 --plan <path to a reviewed plan file>"
+  printf '%s\n' "Usage: $0 --plan <path to a reviewed plan file> [--profile <AWS profile>] [--region <AWS region>]"
 }
 
 plan_path=''
+aws_profile='aws-multimodel-llm'
+aws_region='eu-central-1'
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --plan) plan_path=${2:?}; shift 2 ;;
+    --profile) aws_profile=${2:?}; shift 2 ;;
+    --region) aws_region=${2:?}; shift 2 ;;
     --help) usage; exit 0 ;;
     *) usage >&2; exit 2 ;;
   esac
@@ -31,6 +35,11 @@ case "$plan_path" in
 esac
 
 [[ -f "$plan_path" ]] || { printf '%s\n' 'Plan file not found.' >&2; exit 2; }
+
+export AWS_PROFILE="$aws_profile"
+export AWS_REGION="$aws_region"
+export TF_VAR_aws_profile="$aws_profile"
+export TF_VAR_aws_region="$aws_region"
 
 plan_sha=$(sha256sum "$plan_path" | awk '{print $1}')
 terraform -chdir="$terraform_dir" show -no-color "$plan_path"
