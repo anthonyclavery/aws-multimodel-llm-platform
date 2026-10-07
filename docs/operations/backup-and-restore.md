@@ -1,50 +1,50 @@
-# Sauvegarde et restauration
+# Backup and restore
 
-AWS Backup protège chaque jour l'instance EC2 et son volume EBS chiffré dans le
-vault `aws-multimodel-llm-platform-v0-vault`. La conservation est de 30 jours.
-La sauvegarde planifiée est indépendante de LibreChat et reste valable lorsque
-l'instance est arrêtée la nuit.
+AWS Backup protects the EC2 instance and its encrypted EBS volume every day in
+the `aws-multimodel-llm-platform-v0-vault` vault. Retention is 30 days. The
+scheduled backup is independent from LibreChat and remains valid while the
+instance is stopped overnight.
 
-## Contrôle quotidien
+## Daily check
 
-Depuis WSL, vérifier qu'un point de récupération EC2 chiffré et récent existe :
+From WSL, confirm that a recent encrypted EC2 recovery point exists:
 
 ```sh
 ./scripts/verify-backup-recovery.sh --profile librechat-user
 ```
 
-La commande échoue si le dernier point est absent, non chiffré, ou âgé de plus
-de 26 heures. Elle ne modifie aucune ressource AWS.
+The command fails if the latest recovery point is missing, unencrypted, or more
+than 26 hours old. It does not modify any AWS resource.
 
-## Restauration non destructive
+## Non-destructive restore
 
-Une restauration AWS Backup crée une nouvelle AMI, une nouvelle instance et de
-nouveaux volumes. Elle ne remplace pas l'instance de production existante.
+An AWS Backup restore creates a new AMI, a new instance, and new volumes. It
+does not replace the existing production instance.
 
-En cas d'incident, ouvrir AWS Backup dans `eu-central-1`, choisir
-**Protected resources**, sélectionner l'instance LibreChat puis le dernier
-point de récupération terminé. Choisir **Restore** et conserver le VPC, le
-sous-réseau, le groupe de sécurité et le profil d'instance du projet. Ne pas
-associer l'Elastic IP de production à l'instance restaurée pendant le contrôle.
+In the event of an incident, open AWS Backup in `eu-central-1`, choose
+**Protected resources**, select the LibreChat instance, then select the latest
+completed recovery point. Choose **Restore** and retain the project's VPC,
+subnet, security group, and instance profile. Do not associate the production
+Elastic IP with the restored instance during validation.
 
-Attendre l'état `COMPLETED`, puis vérifier l'instance restaurée via SSM. Tester
-LibreChat sur son adresse privée ou une adresse de test. Confirmer la présence
-des données sous `/opt/aws-multimodel-llm-platform/data`, le démarrage des
-conteneurs, et la possibilité de se connecter avec le compte LibreChat.
+Wait for the `COMPLETED` status, then verify the restored instance through SSM.
+Test LibreChat using its private address or a test address. Confirm that the
+data is present under `/opt/aws-multimodel-llm-platform/data`, that the
+containers start, and that it is possible to sign in with the LibreChat
+account.
 
-Après validation explicite seulement, préparer le basculement de l'Elastic IP
-vers l'instance restaurée. Cette étape interrompt le trafic de production et
-doit être faite dans une fenêtre de maintenance. L'ancienne instance et son
-Elastic IP ne doivent jamais être supprimés avant une validation fonctionnelle
-complète.
+Only after explicit validation, prepare the Elastic IP cutover to the restored
+instance. This step interrupts production traffic and must be performed during
+a maintenance window. The old instance and its Elastic IP must never be deleted
+before full functional validation.
 
-AWS Backup ne restaure pas le user-data EC2. Ce projet n'en dépend pas : le
-déploiement et les scripts sont versionnés dans Git, et les données applicatives
-restent sur le volume sauvegardé.
+AWS Backup does not restore EC2 user data. This project does not rely on it:
+the deployment and scripts are versioned in Git, while application data remains
+on the backed-up volume.
 
-## Exercice de restauration
+## Restore exercise
 
-Un exercice complet crée temporairement une instance et des volumes facturés.
-Il doit être demandé et validé séparément. À l'issue de l'exercice, arrêter puis
-supprimer uniquement les ressources de test identifiées pendant la restauration,
-après avoir confirmé qu'elles ne portent pas l'Elastic IP de production.
+A full exercise temporarily creates a billable instance and volumes. It must be
+requested and approved separately. Once the exercise is complete, stop and
+delete only the test resources identified during the restore, after confirming
+that they do not have the production Elastic IP.
