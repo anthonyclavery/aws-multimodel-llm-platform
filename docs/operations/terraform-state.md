@@ -40,17 +40,19 @@ The apply script displays the plan again and requires the exact phrase
 under `.terraform-plans`. Never use `terraform apply` directly for the
 platform configuration.
 
-From WSL, authenticate the AWS SSO profile, then migrate the existing local
-states once:
+For the initial migration, use a local AWS profile that has been explicitly
+authorized to create the state backend. For routine platform operations after
+the dedicated identity is installed, use `librechat-user` as documented in
+[`librechat-user.md`](librechat-user.md). Check the active identity before any
+state operation:
 
 ```sh
-aws sso login --profile aws-multimodel-llm
-./scripts/bootstrap-terraform-state.sh
+aws sts get-caller-identity --profile librechat-user
 ```
 
-The script first shows the protected-bucket plan through a locally held
-bootstrap state and requires `APPLY_BOOTSTRAP` typed interactively. It then
-creates an ignored backend configuration from the tracked template and migrates
-that bootstrap state and the existing platform state to S3. Do not delete the
-existing local state files manually. Terraform preserves a local backup during
-migration.
+The one-time bootstrap script first shows the protected-bucket plan through a
+locally held bootstrap state and requires `APPLY_BOOTSTRAP` typed
+interactively. It then creates an ignored backend configuration from the
+tracked template and migrates that bootstrap state and the existing platform
+state to S3. Do not delete the existing local state files manually. Terraform
+preserves a local backup during migration.

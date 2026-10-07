@@ -22,6 +22,12 @@ variable "environment" {
   default     = "v0"
 }
 
+variable "operator_iam_user_name" {
+  description = "IAM user allowed to assume the dedicated Terraform operator role for this project."
+  type        = string
+  default     = "librechat_user"
+}
+
 variable "vpc_cidr" {
   description = "CIDR block assigned to the VPC."
   type        = string

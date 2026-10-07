@@ -33,6 +33,28 @@ resource "aws_iam_role_policy_attachment" "backup_restore_service" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores"
 }
 
+data "aws_iam_policy_document" "backup_restore_instance_profile" {
+  statement {
+    sid    = "AttachOnlyThePlatformInstanceRoleDuringRestore"
+    effect = "Allow"
+
+    actions   = ["iam:PassRole"]
+    resources = [aws_iam_role.ec2.arn]
+
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values   = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy" "backup_restore_instance_profile" {
+  name   = "${var.project_name}-${var.environment}-restore-instance-profile"
+  role   = aws_iam_role.backup.id
+  policy = data.aws_iam_policy_document.backup_restore_instance_profile.json
+}
+
 resource "aws_backup_vault" "platform" {
   name = "${var.project_name}-${var.environment}-vault"
 
@@ -77,5 +99,6 @@ resource "aws_backup_selection" "platform_ec2" {
   depends_on = [
     aws_iam_role_policy_attachment.backup_service,
     aws_iam_role_policy_attachment.backup_restore_service,
+    aws_iam_role_policy.backup_restore_instance_profile,
   ]
 }

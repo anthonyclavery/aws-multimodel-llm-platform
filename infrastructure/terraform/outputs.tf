@@ -8,6 +8,16 @@ output "aws_caller_arn" {
   value       = data.aws_caller_identity.current.arn
 }
 
+output "librechat_operator_iam_user_name" {
+  description = "IAM user whose long-term key can assume only the project Terraform operator role."
+  value       = aws_iam_user.librechat_operator.name
+}
+
+output "librechat_terraform_operator_role_arn" {
+  description = "Role assumed by librechat_user for Terraform and SSM operations on this project."
+  value       = aws_iam_role.terraform_operator.arn
+}
+
 output "vpc_id" {
   description = "ID of the platform VPC."
   value       = aws_vpc.platform.id
