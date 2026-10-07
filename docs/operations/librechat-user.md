@@ -1,41 +1,39 @@
-# Identité AWS dédiée LibreChat
+# Dedicated LibreChat AWS identity
 
-`librechat_user` est l'identité locale réservée à ce projet. Elle n'a pas de
-droits directs sur l'infrastructure : sa seule autorisation d'administration
-est d'endosser le rôle Terraform dédié au projet. Elle peut aussi gérer ses
-propres clés d'accès pour permettre une rotation sans revenir au compte
-administrateur global.
+`librechat_user` is the local identity reserved for this project. It has no
+direct permissions over infrastructure: its only administrative permission is
+to assume the dedicated Terraform role for the project. It can also manage its
+own access keys, allowing key rotation without returning to the global
+administrator account.
 
-## Première configuration locale
+## Initial local setup
 
-Après application de Terraform, créer une clé d'accès pour `librechat_user`
-dans la console IAM. Ne pas créer de mot de passe de console et ne jamais
-placer la clé dans Git, dans un fichier du projet, ou dans une commande copiée
-dans l'historique shell.
+After applying Terraform, create an access key for `librechat_user` in the IAM
+console. Do not create a console password, and never place the key in Git, in a
+project file, or in a command copied into shell history.
 
-Configurer ensuite la clé de manière interactive dans WSL :
+Configure the key interactively in WSL:
 
 ```sh
 aws configure --profile librechat-user-source
 ```
 
-Récupérer l'ARN du rôle affiché par Terraform, puis créer le profil qui assume
-ce rôle :
+Retrieve the role ARN displayed by Terraform, then create the profile that
+assumes that role:
 
 ```sh
-aws configure set role_arn '<ARN affiché dans librechat_terraform_operator_role_arn>' --profile librechat-user
+aws configure set role_arn '<ARN shown in librechat_terraform_operator_role_arn>' --profile librechat-user
 aws configure set source_profile librechat-user-source --profile librechat-user
 aws configure set region eu-central-1 --profile librechat-user
 aws configure set output json --profile librechat-user
 aws sts get-caller-identity --profile librechat-user
 ```
 
-La dernière commande doit afficher l'ARN du rôle
-`aws-multimodel-llm-platform-v0-terraform-operator`, et non celui de
-`librechat_user` ni celui de `musical_madness_user`.
+The final command must display the
+`aws-multimodel-llm-platform-v0-terraform-operator` role ARN, not the
+`librechat_user` or `musical_madness_user` ARN.
 
-Utiliser ensuite explicitement ce profil pour les opérations locales du projet,
-par exemple :
+Then explicitly use this profile for local project operations, for example:
 
 ```sh
 ./scripts/terraform-plan.sh --profile librechat-user
@@ -43,16 +41,14 @@ par exemple :
 ./scripts/start-v0-instance.sh --profile librechat-user
 ```
 
-## Portée de l'identité
+## Identity scope
 
-Le rôle autorise uniquement le backend Terraform de cet environnement, les
-services nécessaires à la plateforme dans `eu-central-1`, AWS Backup, SSM sur
-l'instance du projet, les secrets dont le nom commence par le préfixe du
-projet, et les rôles IAM portant le même préfixe. Il n'accorde ni accès aux
-ressources applicatives de Musical Madness, ni souscription Marketplace, ni
-droits d'administration généraux.
+The role authorizes only this environment's Terraform backend, the platform
+services required in `eu-central-1`, AWS Backup, SSM access to the project
+instance, secrets whose names start with the project prefix, and IAM roles that
+share that prefix. It grants neither access to Musical Madness application
+resources, nor Marketplace subscriptions, nor general administrative rights.
 
-La clé source est une clé longue durée. La faire tourner dès qu'elle est
-exposée, perdue ou devenue inutile. AWS recommande les identifiants temporaires
-lorsqu'ils sont disponibles ; ici, la clé ne permet que l'endossement d'un rôle
-propre au projet.
+The source key is a long-term key. Rotate it as soon as it is exposed, lost, or
+no longer needed. AWS recommends temporary credentials whenever they are
+available. Here, the key only permits assuming a role limited to this project.

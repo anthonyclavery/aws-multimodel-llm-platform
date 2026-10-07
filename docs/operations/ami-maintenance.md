@@ -1,10 +1,10 @@
-# Maintenance de l'image EC2
+# EC2 AMI maintenance
 
-L'AMI de l'instance V0 est volontairement figée par la variable `ami_id`.
-Une source d'AMI "la plus récente" ferait remplacer l'instance au prochain
-`terraform apply`, y compris lorsqu'une modification sans rapport est faite.
+The V0 instance AMI is intentionally pinned by the `ami_id` variable.
+Using a "latest" AMI source would replace the instance at the next
+`terraform apply`, including when an unrelated change is made.
 
-Pour mettre à jour l'image, prévoir une fenêtre de maintenance, sauvegarder
-les données EBS, mettre à jour `ami_id`, examiner un plan qui annonce le
-remplacement de l'EC2, puis appliquer cette opération explicitement. Ne pas
-utiliser cette procédure pour une modification ordinaire de l'infrastructure.
+To update the image, schedule a maintenance window, back up the EBS data,
+update `ami_id`, review a plan that shows the EC2 instance replacement, then
+explicitly apply that operation. Do not use this procedure for an ordinary
+infrastructure change.
