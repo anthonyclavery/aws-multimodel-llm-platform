@@ -108,6 +108,20 @@ data "aws_iam_policy_document" "terraform_operator" {
   }
 
   statement {
+    sid    = "ReadAndWriteOnlyBootstrapTerraformStateObject"
+    effect = "Allow"
+
+    actions = [
+      "s3:DeleteObject",
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+      "s3:PutObject",
+    ]
+
+    resources = ["arn:aws:s3:::${local.operator_terraform_state_bucket}/bootstrap/terraform.tfstate"]
+  }
+
+  statement {
     sid    = "LockOnlyPlatformTerraformState"
     effect = "Allow"
 
