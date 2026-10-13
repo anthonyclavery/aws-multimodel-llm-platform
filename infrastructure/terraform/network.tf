@@ -5,7 +5,7 @@ resource "aws_vpc" "platform" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-vpc"
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
@@ -16,7 +16,7 @@ resource "aws_internet_gateway" "platform" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-igw"
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
@@ -30,7 +30,7 @@ resource "aws_subnet" "public" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-public-subnet"
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     Tier        = "public"
     ManagedBy   = "Terraform"
@@ -47,7 +47,7 @@ resource "aws_route_table" "public" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-public-rt"
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }

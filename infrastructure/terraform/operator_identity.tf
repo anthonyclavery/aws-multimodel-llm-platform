@@ -9,7 +9,7 @@ resource "aws_iam_user" "librechat_operator" {
 
   tags = {
     Name        = var.operator_iam_user_name
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
     Purpose     = "HumanTerraformOperator"
@@ -35,7 +35,7 @@ resource "aws_iam_role" "terraform_operator" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-terraform-operator"
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
     Purpose     = "HumanTerraformOperator"

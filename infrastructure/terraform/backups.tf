@@ -17,7 +17,7 @@ resource "aws_iam_role" "backup" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-backup"
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
@@ -60,7 +60,7 @@ resource "aws_backup_vault" "platform" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-vault"
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
@@ -84,7 +84,7 @@ resource "aws_backup_plan" "daily_ebs" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-daily-ebs"
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
