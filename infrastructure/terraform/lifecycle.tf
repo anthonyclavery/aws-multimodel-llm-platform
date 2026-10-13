@@ -17,7 +17,7 @@ resource "aws_iam_role" "scheduler_ec2_stop" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-scheduler-ec2-stop"
-    project     = var.project_name
+    Project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
@@ -45,7 +45,7 @@ resource "aws_scheduler_schedule_group" "platform" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-schedule-group"
-    project     = var.project_name
+    Project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }

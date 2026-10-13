@@ -4,7 +4,7 @@ resource "aws_secretsmanager_secret" "gemini_api_key" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-gemini-api-key"
-    project     = var.project_name
+    Project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
@@ -16,7 +16,7 @@ resource "aws_secretsmanager_secret" "mongodb_credentials" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-mongodb-credentials"
-    project     = var.project_name
+    Project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
@@ -28,7 +28,7 @@ resource "aws_secretsmanager_secret" "librechat_jwt" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-librechat-jwt"
-    project     = var.project_name
+    Project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
@@ -40,7 +40,7 @@ resource "aws_secretsmanager_secret" "cost_dashboard_credentials" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-cost-dashboard-credentials"
-    project     = var.project_name
+    Project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
   }
