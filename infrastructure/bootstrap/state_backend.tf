@@ -9,7 +9,7 @@ resource "aws_s3_bucket" "terraform_state" {
 
   tags = {
     Name        = local.terraform_state_bucket_name
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     Purpose     = "TerraformState"
     ManagedBy   = "Terraform"
@@ -97,7 +97,7 @@ resource "aws_dynamodb_table" "terraform_lock" {
 
   tags = {
     Name        = local.terraform_lock_table_name
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     Purpose     = "TerraformStateLock"
     ManagedBy   = "Terraform"

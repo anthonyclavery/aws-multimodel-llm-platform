@@ -17,7 +17,7 @@ resource "aws_instance" "platform" {
 
     tags = {
       Name        = "${var.project_name}-${var.environment}-root"
-      Project     = var.project_name
+      project     = var.project_name
       Environment = var.environment
       ManagedBy   = "Terraform"
     }
@@ -32,7 +32,7 @@ resource "aws_instance" "platform" {
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-ec2"
-    Project     = var.project_name
+    project     = var.project_name
     Environment = var.environment
     ManagedBy   = "Terraform"
     Backup      = "daily-30-days"
