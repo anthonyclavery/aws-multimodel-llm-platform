@@ -200,6 +200,7 @@ data "aws_iam_policy_document" "terraform_operator" {
       "iam:DetachRolePolicy",
       "iam:GetInstanceProfile",
       "iam:GetRole",
+      "iam:GetRolePolicy",
       "iam:ListRolePolicies",
       "iam:PassRole",
       "iam:PutRolePolicy",
@@ -217,6 +218,15 @@ data "aws_iam_policy_document" "terraform_operator" {
   }
 
   statement {
+    sid    = "ReadOnlyDedicatedOperatorUser"
+    effect = "Allow"
+
+    actions = ["iam:GetUser"]
+
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${var.operator_iam_user_name}"]
+  }
+
+  statement {
     sid    = "ManageOnlyProjectSecrets"
     effect = "Allow"
 
@@ -224,6 +234,7 @@ data "aws_iam_policy_document" "terraform_operator" {
       "secretsmanager:CreateSecret",
       "secretsmanager:DeleteSecret",
       "secretsmanager:DescribeSecret",
+      "secretsmanager:GetResourcePolicy",
       "secretsmanager:GetSecretValue",
       "secretsmanager:ListSecretVersionIds",
       "secretsmanager:PutSecretValue",
@@ -259,6 +270,7 @@ data "aws_iam_policy_document" "terraform_operator" {
       "backup:DescribeRecoveryPoint",
       "backup:GetBackupPlan",
       "backup:GetBackupSelection",
+      "backup:ListTags",
       "backup:ListBackupJobs",
       "backup:ListBackupPlans",
       "backup:ListBackupSelections",
@@ -286,6 +298,7 @@ data "aws_iam_policy_document" "terraform_operator" {
       "scheduler:GetSchedule",
       "scheduler:GetScheduleGroup",
       "scheduler:ListSchedules",
+      "scheduler:ListTagsForResource",
       "scheduler:UpdateSchedule",
     ]
 
