@@ -201,6 +201,7 @@ data "aws_iam_policy_document" "terraform_operator" {
       "iam:GetInstanceProfile",
       "iam:GetRole",
       "iam:GetRolePolicy",
+      "iam:ListAttachedRolePolicies",
       "iam:ListRolePolicies",
       "iam:PassRole",
       "iam:PutRolePolicy",
@@ -221,7 +222,10 @@ data "aws_iam_policy_document" "terraform_operator" {
     sid    = "ReadOnlyDedicatedOperatorUser"
     effect = "Allow"
 
-    actions = ["iam:GetUser"]
+    actions = [
+      "iam:GetUser",
+      "iam:GetUserPolicy",
+    ]
 
     resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${var.operator_iam_user_name}"]
   }
